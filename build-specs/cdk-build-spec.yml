@@ -8,6 +8,7 @@ phases:
   build:
     commads:
       - npm run build
+      - mkdir cdk.out
       - npm run cdk -- synth
 
 artifacts:
