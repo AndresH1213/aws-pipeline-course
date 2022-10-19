@@ -6,9 +6,8 @@ phases:
       - npm install -g npm
       - npm install -E
   build:
-    commads:
+    commands:
       - npm run build
-      - mkdir cdk.out
       - npm run cdk -- synth
 
 artifacts:
