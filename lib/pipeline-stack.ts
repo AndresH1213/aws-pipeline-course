@@ -6,9 +6,11 @@ import { BillingStack } from './billing-stack';
 import {
   CloudFormationCreateUpdateStackAction,
   CodeBuildAction,
+  CodeBuildActionType,
   GitHubSourceAction,
 } from 'aws-cdk-lib/aws-codepipeline-actions';
 import {
+  BuildEnvironmentVariableType,
   BuildSpec,
   LinuxBuildImage,
   PipelineProject,
@@ -18,6 +20,7 @@ export class PipelineStack extends Stack {
   private readonly pipeline: Pipeline;
   private readonly cdkBuildOutput: Artifact;
   private readonly serviceBuildOutput: Artifact;
+  private readonly serviceSourceOutput: Artifact;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -28,7 +31,7 @@ export class PipelineStack extends Stack {
     });
 
     const cdkSourceOutput = new Artifact('CdkSourceOutput');
-    const serviceSourceOutput = new Artifact('ServiceSourceOutput');
+    this.serviceSourceOutput = new Artifact('ServiceSourceOutput');
 
     this.pipeline.addStage({
       stageName: 'Source',
@@ -51,7 +54,7 @@ export class PipelineStack extends Stack {
           oauthToken: SecretValue.secretsManager(
             'github-pipeline-course-token'
           ),
-          output: serviceSourceOutput,
+          output: this.serviceSourceOutput,
         }),
       ],
     });
@@ -77,7 +80,7 @@ export class PipelineStack extends Stack {
         }),
         new CodeBuildAction({
           actionName: 'Service_Build',
-          input: serviceSourceOutput,
+          input: this.serviceSourceOutput,
           outputs: [this.serviceBuildOutput],
           project: new PipelineProject(this, 'ServiceBuildProject', {
             environment: {
@@ -142,6 +145,33 @@ export class PipelineStack extends Stack {
           `${billingStack.stackName}.template.json`
         ),
         adminPermissions: true,
+      })
+    );
+  }
+  public addServiceIntegrationTestToStage(
+    stage: IStage,
+    serviceEndpoint: string
+  ) {
+    stage.addAction(
+      new CodeBuildAction({
+        actionName: 'Integration_Tests',
+        input: this.serviceSourceOutput,
+        project: new PipelineProject(this, 'ServiceIntegrationTestsProject', {
+          environment: {
+            buildImage: LinuxBuildImage.STANDARD_5_0,
+          },
+          buildSpec: BuildSpec.fromSourceFilename(
+            'build-specs/integ-test-build-spec.yml'
+          ),
+        }),
+        environmentVariables: {
+          SERVICE_ENDPOINT: {
+            value: serviceEndpoint,
+            type: BuildEnvironmentVariableType.PLAINTEXT,
+          },
+        },
+        type: CodeBuildActionType.TEST,
+        runOrder: 2,
       })
     );
   }

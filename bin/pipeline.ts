@@ -22,3 +22,15 @@ const serviceStackProd = new ServiceStack(app, 'ServiceStackProd', {
 const testStage = pipelineStack.addServiceStage(serviceStackTest, 'Test');
 const propdStage = pipelineStack.addServiceStage(serviceStackProd, 'Prod');
 pipelineStack.addBillingStackToStage(billingStack, propdStage);
+pipelineStack.addServiceIntegrationTestToStage(
+  testStage,
+  serviceStackTest.serviceEndpointOutput.importValue // here we need to push in parts
+); // because the pipeline stack can't import something that hasn't been exported we need to
+// deploy first service stack
+
+// we can't reference the api directly in the pipeline because the pipeline updates before the services stack tests
+// expose the enpoint so it will fail
+// pipelineStack.addServiceIntegrationTestToStage(
+//   testStage,
+//   serviceStackTest.api.apiEndpoint
+// );
