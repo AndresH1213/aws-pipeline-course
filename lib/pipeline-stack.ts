@@ -15,14 +15,28 @@ import {
   LinuxBuildImage,
   PipelineProject,
 } from 'aws-cdk-lib/aws-codebuild';
+import { SnsTopic } from 'aws-cdk-lib/aws-events-targets';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EventField, RuleTargetInput } from 'aws-cdk-lib/aws-events';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 
 export class PipelineStack extends Stack {
   private readonly pipeline: Pipeline;
   private readonly cdkBuildOutput: Artifact;
   private readonly serviceBuildOutput: Artifact;
   private readonly serviceSourceOutput: Artifact;
+
+  private readonly pipelineNotificationTopic: Topic;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    this.pipelineNotificationTopic = new Topic(this, 'PipelineNotification', {
+      topicName: 'PipelineNotifications',
+    });
+
+    this.pipelineNotificationTopic.addSubscription(
+      new EmailSubscription('edanhebla1213@gmail.com')
+    );
 
     this.pipeline = new Pipeline(this, 'Pipeline', {
       pipelineName: 'Pipeline',
@@ -152,27 +166,47 @@ export class PipelineStack extends Stack {
     stage: IStage,
     serviceEndpoint: string
   ) {
-    stage.addAction(
-      new CodeBuildAction({
-        actionName: 'Integration_Tests',
-        input: this.serviceSourceOutput,
-        project: new PipelineProject(this, 'ServiceIntegrationTestsProject', {
-          environment: {
-            buildImage: LinuxBuildImage.STANDARD_5_0,
-          },
-          buildSpec: BuildSpec.fromSourceFilename(
-            'build-specs/integ-test-build-spec.yml'
-          ),
-        }),
-        environmentVariables: {
-          SERVICE_ENDPOINT: {
-            value: serviceEndpoint,
-            type: BuildEnvironmentVariableType.PLAINTEXT,
+    const integTestAction = new CodeBuildAction({
+      actionName: 'Integration_Tests',
+      input: this.serviceSourceOutput,
+      project: new PipelineProject(this, 'ServiceIntegrationTestsProject', {
+        environment: {
+          buildImage: LinuxBuildImage.STANDARD_5_0,
+        },
+        buildSpec: BuildSpec.fromSourceFilename(
+          'build-specs/integ-test-build-spec.yml'
+        ),
+      }),
+      environmentVariables: {
+        SERVICE_ENDPOINT: {
+          value: serviceEndpoint,
+          type: BuildEnvironmentVariableType.PLAINTEXT,
+        },
+      },
+      type: CodeBuildActionType.TEST,
+      runOrder: 2,
+    });
+
+    stage.addAction(integTestAction);
+    // the action level events has 4 states
+    integTestAction.onStateChange(
+      'IntegrationTestFailed',
+      new SnsTopic(this.pipelineNotificationTopic, {
+        message: RuleTargetInput.fromText(
+          `Integration Test failed. See details here: ${EventField.fromPath(
+            '$.detail.execution-result.external-execution-url'
+          )}`
+        ),
+      }),
+      {
+        ruleName: 'IntegrationTestFailed',
+        eventPattern: {
+          detail: {
+            state: ['FAILED'],
           },
         },
-        type: CodeBuildActionType.TEST,
-        runOrder: 2,
-      })
+        description: 'Integration test has failed',
+      }
     );
   }
 }

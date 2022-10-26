@@ -572,6 +572,22 @@ Object {
       },
       "Type": "AWS::CodePipeline::Pipeline",
     },
+    "PipelineNotification3CB9C198": Object {
+      "Properties": Object {
+        "TopicName": "PipelineNotifications",
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+    "PipelineNotificationedanhebla1213gmailcom670C6912": Object {
+      "Properties": Object {
+        "Endpoint": "edanhebla1213@gmail.com",
+        "Protocol": "email",
+        "TopicArn": Object {
+          "Ref": "PipelineNotification3CB9C198",
+        },
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
     "PipelinePipelineUpdatePipelineupdateCodePipelineActionRoleBB0E4266": Object {
       "Properties": Object {
         "AssumeRolePolicyDocument": Object {
