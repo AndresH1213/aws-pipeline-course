@@ -14,6 +14,7 @@ import {
   LambdaDeploymentGroup,
 } from 'aws-cdk-lib/aws-codedeploy';
 import { Statistic, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
+import { ServiceHealthCanary } from './constructs/service-health-canary';
 
 interface ServiceStackProps extends StackProps {
   stageName: string;
@@ -70,6 +71,11 @@ export class ServiceStack extends Stack {
               treatMissingData: TreatMissingData.NOT_BREACHING, // if we don't get any errors/data at all, that's a good sing
             }), // sometimes when we are not getting any data is a bad sign
         ],
+      });
+
+      new ServiceHealthCanary(this, 'ServiceCanary', {
+        apiEndpoint: httpApi.apiEndpoint,
+        canaryName: 'service-canary',
       });
     }
 
