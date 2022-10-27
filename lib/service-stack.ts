@@ -1,5 +1,6 @@
 import { CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import {
+  Alias,
   CfnParametersCode,
   Code,
   Function,
@@ -28,10 +29,15 @@ export class ServiceStack extends Stack {
       functionName: `ServiceLambda${props?.stageName}`,
     });
 
+    const alias = new Alias(this, 'ServiceLambdaAlias', {
+      version: lambda.currentVersion,
+      aliasName: `ServiceLambdaAlias${props?.stageName}`,
+    });
+
     const httpApi = new HttpApi(this, 'ServiceApi', {
       defaultIntegration: new HttpLambdaIntegration(
         'ServiceIntegration',
-        lambda
+        alias
       ),
       apiName: `MyService${props?.stageName}`,
     });
