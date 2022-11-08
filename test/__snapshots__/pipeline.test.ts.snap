@@ -59,15 +59,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:us-east-1:1234567:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "CdkBuildProject9382C38D",
                       },
@@ -82,15 +74,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:us-east-1:1234567:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "CdkBuildProject9382C38D",
                       },
@@ -117,15 +101,7 @@ Object {
                     Object {
                       "Ref": "AWS::Partition",
                     },
-                    ":codebuild:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":report-group/",
+                    ":codebuild:us-east-1:1234567:report-group/",
                     Object {
                       "Ref": "CdkBuildProject9382C38D",
                     },
@@ -285,11 +261,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
+                      ":iam::1234567:root",
                     ],
                   ],
                 },
@@ -347,11 +319,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
+                      ":iam::1234567:root",
                     ],
                   ],
                 },
@@ -604,11 +572,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":iam::",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":root",
+                      ":iam::1234567:root",
                     ],
                   ],
                 },
@@ -683,15 +647,7 @@ Object {
                     Object {
                       "Ref": "AWS::Partition",
                     },
-                    ":cloudformation:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":stack/PipelineStack/*",
+                    ":cloudformation:us-east-1:1234567:stack/PipelineStack/*",
                   ],
                 ],
               },
@@ -967,15 +923,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:us-east-1:1234567:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "ServiceBuildProject6D228AFA",
                       },
@@ -990,15 +938,7 @@ Object {
                       Object {
                         "Ref": "AWS::Partition",
                       },
-                      ":logs:",
-                      Object {
-                        "Ref": "AWS::Region",
-                      },
-                      ":",
-                      Object {
-                        "Ref": "AWS::AccountId",
-                      },
-                      ":log-group:/aws/codebuild/",
+                      ":logs:us-east-1:1234567:log-group:/aws/codebuild/",
                       Object {
                         "Ref": "ServiceBuildProject6D228AFA",
                       },
@@ -1025,15 +965,7 @@ Object {
                     Object {
                       "Ref": "AWS::Partition",
                     },
-                    ":codebuild:",
-                    Object {
-                      "Ref": "AWS::Region",
-                    },
-                    ":",
-                    Object {
-                      "Ref": "AWS::AccountId",
-                    },
-                    ":report-group/",
+                    ":codebuild:us-east-1:1234567:report-group/",
                     Object {
                       "Ref": "ServiceBuildProject6D228AFA",
                     },

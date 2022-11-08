@@ -15,6 +15,8 @@ import {
 } from 'aws-cdk-lib/aws-codedeploy';
 import { Statistic, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { ServiceHealthCanary } from './constructs/service-health-canary';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 
 interface ServiceStackProps extends StackProps {
   stageName: string;
@@ -73,9 +75,16 @@ export class ServiceStack extends Stack {
         ],
       });
 
+      const alarmTopic = new Topic(this, 'ServiceCanaryAlarmTopic', {
+        topicName: 'ServiceAlarmTopic',
+      });
+
+      // alarmTopic.addSubscription(new EmailSubscription("edanhebla1213@gmail.com"))
+
       new ServiceHealthCanary(this, 'ServiceCanary', {
         apiEndpoint: httpApi.apiEndpoint,
         canaryName: 'service-canary',
+        alarmTopic,
       });
     }
 

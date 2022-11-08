@@ -128,10 +128,16 @@ export class PipelineStack extends Stack {
     serviceStack: ServiceStack,
     stageName: string
   ): IStage {
+    // this actions itself takes account to the region props as well
+    // and if we don't specify it, it will take the account and the region of
+    // the pipeline, even if the stack itself is synthesice with the specific environment
+    // like we pass in the pipeline.ts props env
     return this.pipeline.addStage({
       stageName: stageName,
       actions: [
         new CloudFormationCreateUpdateStackAction({
+          account: serviceStack.account,
+          region: serviceStack.region,
           actionName: 'Service_Update',
           stackName: serviceStack.stackName,
           templatePath: this.cdkBuildOutput.atPath(
